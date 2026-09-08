@@ -8,6 +8,10 @@ const errorHandler = require('./middleware/errorHandler');
 // Route files
 const authRoutes = require('./routes/authRoutes');
 const hotelRoutes = require('./routes/hotelRoutes');
+const roomTypeRoutes = require('./routes/roomTypeRoutes');
+const roomRoutes = require('./routes/roomRoutes');
+const availabilityRoutes = require('./routes/availabilityRoutes');
+const pricingRoutes = require('./routes/pricingRoutes');
 
 const app = express();
 
@@ -36,6 +40,10 @@ app.get('/api', (req, res) => {
 // Mount Routes
 app.use('/api/auth', authRoutes);                   // Authentication & RBAC
 app.use('/api/hotels', hotelRoutes);               // Hotels & Properties
+app.use('/api/room-types', roomTypeRoutes);         // Room Categories & Types
+app.use('/api/rooms', roomRoutes);                 // Physical Room Inventory
+app.use('/api/availability', availabilityRoutes);   // Availability Search Engine
+app.use('/api/pricing-rules', pricingRoutes);       // Dynamic Pricing Rules
 
 // 404 Handler for undefined API routes
 app.all('/api/*', (req, res) => {
