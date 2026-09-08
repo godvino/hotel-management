@@ -1,0 +1,13 @@
+node_modules
+npm-debug.log
+.env
+.env.local
+.git
+.gitignore
+.github
+*.md
+p03 hotel.txt
+project details.txt
+sub req.txt
+test_api.js
+.DS_Store
