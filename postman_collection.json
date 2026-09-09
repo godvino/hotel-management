@@ -1,0 +1,1045 @@
+{
+  "info": {
+    "_postman_id": "c1f72a4e-8b1d-4876-928d-19468e612345",
+    "name": "Hotel Room Booking & Reservation Platform",
+    "description": "Comprehensive REST API test collection for Hotel Room Booking & Reservation Platform.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://lnt-hotel-management-cia3.0dv.in",
+      "type": "string"
+    },
+    {
+      "key": "guestToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "staffToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "sampleHotelId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "sampleRoomTypeId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "sampleBookingId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Role-Based Authentication",
+      "item": [
+        {
+          "name": "1.1 Guest - Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"guest@hotel.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/guest/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "guest",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "1.2 Guest - Register Account",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Priya Menon\",\n  \"email\": \"priya.menon@example.com\",\n  \"password\": \"Password123!\",\n  \"phone\": \"+91-9876543210\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/guest/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "guest",
+                "register"
+              ]
+            }
+          }
+        },
+        {
+          "name": "1.3 Staff - Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"staff@hotel.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/staff/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "staff",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "1.4 Staff - Register (Requires Secret)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Frontdesk Officer Vikram\",\n  \"email\": \"vikram.staff@hotel.com\",\n  \"password\": \"Password123!\",\n  \"phone\": \"+91-9876543222\",\n  \"staffSecretKey\": \"STAFF2026\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/staff/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "staff",
+                "register"
+              ]
+            }
+          }
+        },
+        {
+          "name": "1.5 Admin - Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@hotel.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/admin/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "admin",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "1.6 Admin - Register (Requires Secret)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Executive Director\",\n  \"email\": \"director@hotel.com\",\n  \"password\": \"Password123!\",\n  \"phone\": \"+91-9876543299\",\n  \"adminSecretKey\": \"ADMIN2026\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/admin/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "admin",
+                "register"
+              ]
+            }
+          }
+        },
+        {
+          "name": "1.7 Cross-Portal Login Rejection (Guest -> Admin: Expect 403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"guest@hotel.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/admin/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "admin",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "1.8 Get Current Profile (/me)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guestToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Hotel & Property Management",
+      "item": [
+        {
+          "name": "2.1 Get All Hotels (Public)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/hotels",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "hotels"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2.2 Get Hotel By ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/hotels/{{sampleHotelId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "hotels",
+                "{{sampleHotelId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2.3 Create Hotel (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"The Heritage Palace Jaipur\",\n  \"city\": \"Jaipur\",\n  \"address\": \"Civil Lines, Jaipur, Rajasthan 302006\",\n  \"amenities\": [\n    \"Pool\",\n    \"Spa\",\n    \"Dining\",\n    \"WiFi\"\n  ],\n  \"rating\": 4.9,\n  \"contactEmail\": \"jaipur@heritagepalace.com\",\n  \"contactPhone\": \"+91-141-2345678\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/hotels",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "hotels"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2.4 Update Hotel (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 4.95,\n  \"amenities\": [\n    \"Pool\",\n    \"Spa\",\n    \"Fine Dining\",\n    \"High-speed WiFi\",\n    \"Valet\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/hotels/{{sampleHotelId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "hotels",
+                "{{sampleHotelId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Room Type & Inventory Management",
+      "item": [
+        {
+          "name": "3.1 Get Room Types by Hotel",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/room-types?hotelId={{sampleHotelId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "room-types"
+              ],
+              "query": [
+                {
+                  "key": "hotelId",
+                  "value": "{{sampleHotelId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.2 Create Room Type (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"hotelId\": \"{{sampleHotelId}}\",\n  \"name\": \"Luxury Garden Suite\",\n  \"basePrice\": 5500,\n  \"totalRooms\": 5,\n  \"capacity\": 2,\n  \"bedType\": \"King Bed\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/room-types",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "room-types"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.3 Get Physical Room Inventory (Staff/Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{staffToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/rooms",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "rooms"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.4 Create Physical Room (Staff/Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{staffToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"hotelId\": \"{{sampleHotelId}}\",\n  \"roomTypeId\": \"{{sampleRoomTypeId}}\",\n  \"roomNumber\": \"301\",\n  \"floor\": 3,\n  \"housekeepingStatus\": \"Clean\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/rooms",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "rooms"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Availability Search Engine",
+      "item": [
+        {
+          "name": "4.1 Search Rooms by Date & Occupancy",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/availability/search?checkIn=2026-10-01&checkOut=2026-10-04&guests=2&city=Bengaluru",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "availability",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "checkIn",
+                  "value": "2026-10-01"
+                },
+                {
+                  "key": "checkOut",
+                  "value": "2026-10-04"
+                },
+                {
+                  "key": "guests",
+                  "value": "2"
+                },
+                {
+                  "key": "city",
+                  "value": "Bengaluru"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "4.2 Search Rooms via Hotel Endpoint Alias",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/hotels/search?checkIn=2026-10-01&checkOut=2026-10-04&guests=2&city=Bengaluru",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "hotels",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "checkIn",
+                  "value": "2026-10-01"
+                },
+                {
+                  "key": "checkOut",
+                  "value": "2026-10-04"
+                },
+                {
+                  "key": "guests",
+                  "value": "2"
+                },
+                {
+                  "key": "city",
+                  "value": "Bengaluru"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Reservation Booking Workflow",
+      "item": [
+        {
+          "name": "5.1 Create Reservation (Guest)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guestToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"hotelId\": \"{{sampleHotelId}}\",\n  \"roomTypeId\": \"{{sampleRoomTypeId}}\",\n  \"checkIn\": \"2026-10-05\",\n  \"checkOut\": \"2026-10-08\",\n  \"guestsCount\": 2,\n  \"specialRequests\": \"Quiet room on higher floor\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Dynamic Pricing Rules",
+      "item": [
+        {
+          "name": "6.1 Preview Pricing Quote",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pricing-rules/quote?roomTypeId={{sampleRoomTypeId}}&checkIn=2026-10-05&checkOut=2026-10-08",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pricing-rules",
+                "quote"
+              ],
+              "query": [
+                {
+                  "key": "roomTypeId",
+                  "value": "{{sampleRoomTypeId}}"
+                },
+                {
+                  "key": "checkIn",
+                  "value": "2026-10-05"
+                },
+                {
+                  "key": "checkOut",
+                  "value": "2026-10-08"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "6.2 List Pricing Rules",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pricing-rules",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pricing-rules"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Booking Status Management",
+      "item": [
+        {
+          "name": "7.1 Confirm Booking (Reserved -> Confirmed)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guestToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/{{sampleBookingId}}/confirm",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "{{sampleBookingId}}",
+                "confirm"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Frontdesk Check-in & Check-out",
+      "item": [
+        {
+          "name": "8.1 Staff Check-in Action",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{staffToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"remarks\": \"Checked in at reception. Keycard issued.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/{{sampleBookingId}}/checkin",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "{{sampleBookingId}}",
+                "checkin"
+              ]
+            }
+          }
+        },
+        {
+          "name": "8.2 Staff Check-out Action",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{staffToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"remarks\": \"Checked out. Room vacated.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/{{sampleBookingId}}/checkout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "{{sampleBookingId}}",
+                "checkout"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. Housekeeping Operations",
+      "item": [
+        {
+          "name": "9.1 Get Housekeeping Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{staffToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/housekeeping/summary",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "housekeeping",
+                "summary"
+              ]
+            }
+          }
+        },
+        {
+          "name": "9.2 Get Housekeeping Rooms List",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{staffToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/housekeeping/rooms",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "housekeeping",
+                "rooms"
+              ]
+            }
+          }
+        },
+        {
+          "name": "9.3 Update Room Cleanliness Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{staffToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"housekeepingStatus\": \"Clean\",\n  \"notes\": \"Linens changed and sanitized.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/housekeeping/rooms/{{sampleRoomId}}/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "housekeeping",
+                "rooms",
+                "{{sampleRoomId}}",
+                "status"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "10. Cancellation & Refund Policy",
+      "item": [
+        {
+          "name": "10.1 Cancel Reservation",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guestToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Travel plans changed\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/{{sampleBookingId}}/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "{{sampleBookingId}}",
+                "cancel"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "11. Guest Booking History",
+      "item": [
+        {
+          "name": "11.1 My Bookings History (Current Guest)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guestToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/my-bookings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "my-bookings"
+              ]
+            }
+          }
+        },
+        {
+          "name": "11.2 Get Guest Bookings by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guestToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/guests/{{sampleGuestId}}/bookings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "guests",
+                "{{sampleGuestId}}",
+                "bookings"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "12. Invoice Generation Summary",
+      "item": [
+        {
+          "name": "12.1 Get Itemized Invoice Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guestToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/{{sampleBookingId}}/invoice",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "{{sampleBookingId}}",
+                "invoice"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "13. Admin Occupancy & Revenue Reports",
+      "item": [
+        {
+          "name": "13.1 Get Occupancy & Revenue Analytics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/reports/occupancy",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "reports",
+                "occupancy"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "14. Negative & Validation Tests",
+      "item": [
+        {
+          "name": "14.1 Missing Auth Token (Expect 401)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/my-bookings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "my-bookings"
+              ]
+            }
+          }
+        },
+        {
+          "name": "14.2 Guest Creating Hotel (Expect 403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guestToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Unauthorized Hotel\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/hotels",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "hotels"
+              ]
+            }
+          }
+        },
+        {
+          "name": "14.3 Non-existent Resource (Expect 404)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/hotels/507f1f77bcf86cd799439011",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "hotels",
+                "507f1f77bcf86cd799439011"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -368,6 +368,173 @@ const checkOutBooking = async (req, res, next) => {
   }
 };
 
+// @desc    Cancellation & Refund Policy Engine (Module 10)
+// @route   PUT /api/bookings/:id/cancel
+// @access  Private (Guest, Staff, Admin)
+const cancelBooking = async (req, res, next) => {
+  try {
+    const { reason } = req.body;
+
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: 'Booking not found',
+        errorCode: 'BOOKING_NOT_FOUND'
+      });
+    }
+
+    // Authorization check
+    if (req.user.role === 'guest' && booking.guestId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'Forbidden: You cannot cancel another guest\'s booking',
+        errorCode: 'FORBIDDEN'
+      });
+    }
+
+    if (booking.status === 'Cancelled') {
+      return res.status(400).json({
+        success: false,
+        message: 'This booking has already been cancelled',
+        errorCode: 'ALREADY_CANCELLED'
+      });
+    }
+
+    if (booking.status === 'Checked-in' || booking.status === 'Checked-out') {
+      return res.status(400).json({
+        success: false,
+        message: `Cannot cancel a booking that is already ${booking.status}`,
+        errorCode: 'INVALID_CANCELLATION'
+      });
+    }
+
+    // Cancellation & Refund Policy Rules:
+    // Notice time before checkIn
+    const now = new Date();
+    const checkInTime = new Date(booking.checkIn);
+    const diffHours = (checkInTime - now) / (1000 * 60 * 60);
+
+    let refundPercentage = 0;
+    if (diffHours >= 48) {
+      refundPercentage = 100; // >48h: 100% refund
+    } else if (diffHours >= 24) {
+      refundPercentage = 50;  // 24h-48h: 50% refund
+    } else {
+      refundPercentage = 0;   // <24h: 0% refund
+    }
+
+    const totalPaid = booking.pricingBreakdown.totalAmount;
+    const refundAmount = Math.round((totalPaid * refundPercentage) / 100);
+    const penaltyAmount = totalPaid - refundAmount;
+
+    booking.status = 'Cancelled';
+    booking.cancellation = {
+      cancelledAt: now,
+      reason: reason || 'Cancelled by user request',
+      refundPercentage,
+      refundAmount,
+      penaltyAmount
+    };
+
+    await booking.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Booking cancelled successfully. Refund processed according to policy.',
+      data: {
+        bookingId: booking._id,
+        bookingReference: booking.bookingReference,
+        status: booking.status,
+        cancellation: booking.cancellation
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Invoice Generation Summary (Module 12)
+// @route   GET /api/bookings/:id/invoice
+// @access  Private (Guest, Staff, Admin)
+const getBookingInvoice = async (req, res, next) => {
+  try {
+    const booking = await Booking.findById(req.params.id)
+      .populate('guestId', 'name email phone')
+      .populate('hotelId', 'name city address contactPhone contactEmail')
+      .populate('roomTypeId', 'name basePrice capacity')
+      .populate('roomAllocated', 'roomNumber floor');
+
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: 'Booking not found',
+        errorCode: 'BOOKING_NOT_FOUND'
+      });
+    }
+
+    // Role check
+    if (req.user.role === 'guest' && booking.guestId._id.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'Forbidden: Access denied to invoice',
+        errorCode: 'FORBIDDEN'
+      });
+    }
+
+    const invoice = {
+      invoiceNumber: `INV-${booking.bookingReference}`,
+      invoiceDate: new Date().toISOString(),
+      bookingReference: booking.bookingReference,
+      status: booking.status,
+      customer: {
+        name: booking.guestId.name,
+        email: booking.guestId.email,
+        phone: booking.guestId.phone
+      },
+      property: {
+        hotelName: booking.hotelId.name,
+        city: booking.hotelId.city,
+        address: booking.hotelId.address,
+        contact: booking.hotelId.contactPhone
+      },
+      stayDetails: {
+        checkIn: booking.checkIn,
+        checkOut: booking.checkOut,
+        actualCheckIn: booking.actualCheckIn,
+        actualCheckOut: booking.actualCheckOut,
+        roomType: booking.roomTypeId.name,
+        roomNumber: booking.roomAllocated ? booking.roomAllocated.roomNumber : 'Unassigned',
+        guests: booking.guestsCount,
+        nights: booking.pricingBreakdown.nightsCount
+      },
+      lineItems: booking.pricingBreakdown.nightlyRates.map((night) => ({
+        date: night.date,
+        description: `Room Night - ${booking.roomTypeId.name} (${night.seasonName})`,
+        rate: night.rate,
+        multiplier: night.multiplierApplied
+      })),
+      financialSummary: {
+        roomSubtotal: booking.pricingBreakdown.roomSubtotal,
+        taxes: {
+          rate: `${booking.pricingBreakdown.taxes.ratePercentage}%`,
+          amount: booking.pricingBreakdown.taxes.taxAmount
+        },
+        serviceCharges: booking.pricingBreakdown.serviceCharges,
+        totalAmount: booking.pricingBreakdown.totalAmount,
+        refundApplied: booking.status === 'Cancelled' ? booking.cancellation.refundAmount : 0,
+        netPayable: booking.status === 'Cancelled' ? booking.cancellation.penaltyAmount : booking.pricingBreakdown.totalAmount
+      }
+    };
+
+    res.status(200).json({
+      success: true,
+      data: invoice
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = {
   createBooking,
@@ -376,7 +543,9 @@ module.exports = {
   getBookingById,
   confirmBooking,
   checkInBooking,
-  checkOutBooking
+  checkOutBooking,
+  cancelBooking,
+  getBookingInvoice
 };
 
 // @desc    Get booking history for a specific guest ID (Exact match for sample endpoint)

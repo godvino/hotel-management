@@ -1,0 +1,49 @@
+:root {
+  --primary-color: #1a4d8c;
+  --secondary-color: #d97706;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #2d3748;
+}
+
+.bg-primary {
+  background-color: var(--primary-color) !important;
+}
+
+.text-primary {
+  color: var(--primary-color) !important;
+}
+
+.card {
+  border-radius: 0.75rem;
+  transition: transform 0.15s ease-in-out;
+}
+
+.nav-pills .nav-link {
+  border-radius: 0.5rem;
+  color: #4a5568;
+}
+
+.nav-pills .nav-link.active {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+.badge {
+  font-weight: 500;
+  letter-spacing: 0.025em;
+}
+
+.table th {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: #718096;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}

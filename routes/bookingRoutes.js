@@ -7,7 +7,9 @@ const {
   getBookingById,
   confirmBooking,
   checkInBooking,
-  checkOutBooking
+  checkOutBooking,
+  cancelBooking,
+  getBookingInvoice
 } = require('../controllers/bookingController');
 const { protect, authorize } = require('../middleware/auth');
 const validate = require('../middleware/validate');
@@ -30,9 +32,11 @@ router.post(
 router.get('/my-bookings', protect, getMyBookings);
 router.get('/', protect, authorize('staff', 'admin'), getAllBookings);
 router.get('/:id', protect, getBookingById);
+router.get('/:id/invoice', protect, getBookingInvoice);
 
 router.put('/:id/confirm', protect, confirmBooking);
 router.put('/:id/checkin', protect, authorize('staff', 'admin'), checkInBooking);
 router.put('/:id/checkout', protect, authorize('staff', 'admin'), checkOutBooking);
+router.put('/:id/cancel', protect, cancelBooking);
 
 module.exports = router;
