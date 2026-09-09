@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const { connectDB } = require('./config/db');
+const { autoSeedIfEmpty } = require('./utils/autoSeed');
 const errorHandler = require('./middleware/errorHandler');
 
 // Route files
@@ -11,7 +12,9 @@ const hotelRoutes = require('./routes/hotelRoutes');
 const roomTypeRoutes = require('./routes/roomTypeRoutes');
 const roomRoutes = require('./routes/roomRoutes');
 const availabilityRoutes = require('./routes/availabilityRoutes');
+const bookingRoutes = require('./routes/bookingRoutes');
 const pricingRoutes = require('./routes/pricingRoutes');
+const guestRoutes = require('./routes/guestRoutes');
 
 const app = express();
 
@@ -40,9 +43,11 @@ app.get('/api', (req, res) => {
 // Mount Routes
 app.use('/api/auth', authRoutes);                   // Authentication & RBAC
 app.use('/api/hotels', hotelRoutes);               // Hotels & Properties
+app.use('/api/guests', guestRoutes);               // Guest Profiles & History
 app.use('/api/room-types', roomTypeRoutes);         // Room Categories & Types
 app.use('/api/rooms', roomRoutes);                 // Physical Room Inventory
 app.use('/api/availability', availabilityRoutes);   // Availability Search Engine
+app.use('/api/bookings', bookingRoutes);           // Bookings & Reservations
 app.use('/api/pricing-rules', pricingRoutes);       // Dynamic Pricing Rules
 
 // 404 Handler for undefined API routes
@@ -62,6 +67,7 @@ const PORT = process.env.PORT || 5000;
 let server;
 if (process.env.NODE_ENV !== 'test') {
   connectDB().then(async () => {
+    await autoSeedIfEmpty();
     server = app.listen(PORT, () => {
       console.log(`🚀 Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
     });
